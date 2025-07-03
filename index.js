@@ -21,8 +21,8 @@ const validMicroservices = [
 ];
 
 const serviceMap = {
-  //'Customer-Management-Service': 'http://customer-management-service:3001',
-  'Customer-Management-Service': 'http://fmcg-template-service:3000',
+  'Customer-Management-Service': 'http://customer-management-service:3001',
+  //'Customer-Management-Service': 'http://fmcg-template-service:3000',
   'Order-Management-Service': 'http://order-management-service:3002',
   'Production-Tracking-Service': 'http://production-tracking-service:3003',
   'Production-Management-Service': 'http://production-management-service:3004',
