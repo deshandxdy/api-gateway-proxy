@@ -46,14 +46,14 @@ const validMicroservices = [
 
 // 📍 Correct Docker Compose Service Hostnames
 const serviceMap = {
-  'Customer-Management-Service': 'http://fmcg-template-service:3000',
+  'Customer-Management-Service': 'http://fmcg-customer-management-service:3001',
   'Order-Management-Service': 'http://order-management-service:3002',
   'Production-Tracking-Service': 'http://production-tracking-service:3003',
   'Production-Management-Service': 'http://production-management-service:3004',
   'Inventory-Management-Service': 'http://inventory-management-service:3005',
   'Platform-Insights-Service': 'http://platform-insights-service:3006',
   'Platform-Payment-Service': 'http://platform-payment-service:3007',
-  'Platform-Masterdata-Service': 'http://platform-masterdata-service:3008',
+  'Platform-Masterdata-Service': 'http://fmcg-platform-masterdata-service:3008',
   'Platform-Gateway-Service': 'http://platform-gateway-service:3009',
   'Platform-Esuite-Service (CDC)': 'http://platform-esuite-service:3010',
   'Platform-Config-Service': 'http://fmcg-config-service:3011',
