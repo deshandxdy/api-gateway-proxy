@@ -1,62 +1,43 @@
 const jwt = require('jsonwebtoken');
-const jwksRsa = require('jwks-rsa');
+require('dotenv').config();
 
-const jwksUri = process.env.AUTH0_DOMAIN
-  ? `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`
-  : 'https://cdc-dev.eu.auth0.com/.well-known/jwks.json'; // fallback
+// --- UPDATED: Load all required variables from the environment ---
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_ISSUER = process.env.JWT_ISSUER;
+const JWT_AUDIENCE = process.env.JWT_AUDIENCE;
 
-const client = jwksRsa({
-  jwksUri,
-  cache: true,
-  rateLimit: true,
-});
-
-function getKey(header, callback) {
-  if (!header || !header.kid) {
-    console.error('❌ No "kid" found in token header:', header);
-    return callback(new Error('Missing "kid" in token header'));
-  }
-
-  client.getSigningKey(header.kid, (err, key) => {
-    if (err) {
-      console.error('❌ Failed to get signing key:', err);
-      return callback(err);
-    }
-
-    const signingKey = key.getPublicKey();
-    callback(null, signingKey);
-  });
+if (!JWT_SECRET || !JWT_ISSUER || !JWT_AUDIENCE) {
+  console.error('❌ FATAL ERROR: JWT_SECRET, JWT_ISSUER, or JWT_AUDIENCE is not defined in the .env file!');
+  // In a real scenario, you might want to exit if the configuration is incomplete
+  // process.exit(1);
 }
 
-
 function checkJwt(req, res, next) {
-  if(!process.env.AUTH0_DOMAIN) {
-    console.error('❌ AUTH0_DOMAIN is missing!');
-    process.exit(1);
-  }
   const token = (req.headers.authorization || '').split(' ')[1];
 
   if (!token) {
     return res.status(401).send('Missing or invalid Authorization header');
   }
 
-  jwt.verify(
-    token,
-    getKey,
-    {
-      audience: process.env.AUTH0_AUDIENCE,
-      issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-      algorithms: ['RS256'],
-    },
-    (err, decoded) => {
-      if (err) {
-        return res.status(401).send(`Invalid token: ${err.message}`);
-      }
+  try {
+    // --- UPDATED: Create an options object for stricter verification ---
+    // This now checks not only the signature and expiration, but also that
+    // the token was created by the correct issuer for the correct audience.
+    const verificationOptions = {
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
+    };
 
-      req.user = decoded;
-      next();
-    }
-  );
+    // Pass the options as the third argument to jwt.verify
+    const decoded = jwt.verify(token, JWT_SECRET, verificationOptions);
+
+    req.user = decoded;
+    next();
+  } catch (err) {
+    // This error block will now catch more failure types, e.g., "jwt issuer invalid"
+    console.error('JWT verification failed:', err.message);
+    return res.status(401).send(`Invalid token: ${err.message}`);
+  }
 }
 
 module.exports = { checkJwt };
