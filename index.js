@@ -34,9 +34,8 @@ const validMicroservices = [
 ];
 
 const serviceMap = {
-  'Production-Management-Service': 'http://fmcg-production-management-service:3004',
+  'Customer-Management-Service': 'http://fmcg-customer-management-service:3001',
   'Order-Management-Service': 'http://order-management-service:3002',
-  'Inventory-Management-Service': 'http://fmcg-inventory-management-service:3005',
   // ... all your other mappings
   'Platform-Masterdata-Service': 'http://fmcg-platform-masterdata-service:3008',
   'Web-App': 'http://fmcg-web-app:3012',
