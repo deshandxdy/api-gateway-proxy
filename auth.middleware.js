@@ -30,7 +30,7 @@ function checkJwt(req, res, next) {
 
     // Pass the options as the third argument to jwt.verify
     const decoded = jwt.verify(token, JWT_SECRET, verificationOptions);
-
+    console.log("decoded. ", decoded)
     req.user = decoded;
     next();
   } catch (err) {

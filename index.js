@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 
 // Service Lists and Maps (no changes)
 const validMicroservices = [
-  'Customer-Management-Service',
+  'Production-Management-Service',
   'Order-Management-Service',
   // ... all your other services
   'Platform-Masterdata-Service',
@@ -34,7 +34,7 @@ const validMicroservices = [
 ];
 
 const serviceMap = {
-  'Customer-Management-Service': 'http://fmcg-customer-management-service:3001',
+  'Production-Management-Service': 'http://fmcg-production-management-service:3004',
   'Order-Management-Service': 'http://order-management-service:3002',
   // ... all your other mappings
   'Platform-Masterdata-Service': 'http://fmcg-platform-masterdata-service:3008',
