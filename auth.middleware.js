@@ -13,10 +13,24 @@ if (!JWT_SECRET || !JWT_ISSUER || !JWT_AUDIENCE) {
 }
 
 function checkJwt(req, res, next) {
-  const token = (req.headers.authorization || '').split(' ')[1];
+  let token = (req.headers.authorization || '').split(' ')[1];
+
+  // Fallback: Support token in query parameter (primarily for SSE connection handshake)
+  if (!token) {
+    if (req.query && typeof req.query.token === 'string') {
+      token = req.query.token;
+    } else {
+      // Direct raw query string regex extraction
+      const match = req.url.match(/[?&]token=([^&]+)/);
+      if (match) {
+        token = decodeURIComponent(match[1]);
+      }
+    }
+  }
 
   if (!token) {
-    return res.status(401).send('Missing or invalid Authorization header');
+    console.warn(`[Proxy Auth] Token validation failed: missing token for URL: ${req.url}`);
+    return res.status(401).send('Missing or invalid Authorization header or token query parameter');
   }
 
   try {

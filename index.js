@@ -35,7 +35,7 @@ const validMicroservices = [
 
 const serviceMap = {
   'Production-Management-Service': 'http://fmcg-production-management-service:3004',
-  'Order-Management-Service': 'http://order-management-service:3002',
+  'Order-Management-Service': 'http://fmcg-order-management-service:3002',
   // ... all your other mappings
   'Platform-Masterdata-Service': 'http://fmcg-platform-masterdata-service:3008',
   'Web-App': 'http://fmcg-web-app:3012',
@@ -43,10 +43,21 @@ const serviceMap = {
 
 // Proxy Routing Logic (no changes)
 app.use((req, res, next) => {
-  const targetService = req.headers['x-service-target'];
+  let targetService = req.headers['x-service-target'];
+
+  console.log(`[Proxy Request] ${req.method} ${req.url} | Header target: ${targetService}`);
+
+  // Fallback: route notifications to Order-Management-Service if header is missing (e.g., SSE)
+  const isNotificationPath = req.url.startsWith('/api/v1/notifications') || (req.path && req.path.startsWith('/api/v1/notifications'));
+  if (!targetService && isNotificationPath) {
+    targetService = 'Order-Management-Service';
+    console.log(`[Proxy Fallback] Missing x-service-target header, routing notification request to: ${targetService}`);
+  }
+
   const target = serviceMap[targetService];
 
   if (!targetService) {
+    console.warn(`[Proxy Warning] Missing x-service-target header for URL: ${req.url}`);
     return res.status(400).send('Missing x-service-target header');
   }
 
